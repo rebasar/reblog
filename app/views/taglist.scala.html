@@ -1,0 +1,8 @@
+@(tags: List[Tag])
+
+<ul>
+  @for(tag <- tags){
+	      <li><span class="tag @(if (tag.selected) {"selected"} else {"unselected"})">@tag.name</span><span class="count">@tag.count</span></li>
+	      }
+</ul>
+
