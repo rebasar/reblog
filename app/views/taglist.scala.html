@@ -2,7 +2,7 @@
 
 <ul>
   @for(tag <- tags){
-	      <li><span class="tag @(if (tag.selected) {"selected"} else {"unselected"})">@tag.name</span><span class="count">@tag.count</span></li>
+	      <li><span class="tag @(if (tag.selected) {"selected"} else {"unselected"})"><a href="@tag.href">@tag.name</a></span><span class="count">@tag.count</span></li>
 	      }
 </ul>
 

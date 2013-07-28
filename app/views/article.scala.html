@@ -1,13 +1,13 @@
 @(article: Article)
 <div class="article" id="@article.slug">
-  <div class="title">@article.title</div>
+  <div class="title"><a href="@article.url">@article.title</a></div>
   <div class="body">@Html(article.content)</div>
   <div class="footer">
-    <span class="created">@article.creationDate</span>
     <span class="tags">
       @for(tag <- article.tags){
 		  <span class="tag">@tag</span>
 		  }
     </span>
+    <span class="updated">@article.formattedUpdateDate</span>
   </div>
 </div>

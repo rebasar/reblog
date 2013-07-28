@@ -1,6 +1,7 @@
 package models
 
 import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 import play.api.mvc.QueryStringBindable
 import reactivemongo.bson._
 
@@ -94,18 +95,33 @@ case class Article(
   tags: Set[String],
   language: Language,
   format: ArticleFormat
-)
+) {
+
+  def formatReadableDate(dt : DateTime) = {
+    val formatter = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm z")
+    formatter.print(dt)
+  }
+
+  def url : String = controllers.routes.Application.page(slug).url
+
+  def formattedCreationDate = creationDate.map(formatReadableDate(_))
+  def formattedUpdateDate = updateDate.map(formatReadableDate(_))
+
+}
 
 object Article {
 
   def queryAll = BSONDocument()
 
-  def queryForTags(tags : List[String]) = tags match {
-    case Nil => queryAll
-    case _ => BSONDocument("tags" -> BSONDocument("$in" -> tags))
+  def queryForTags(tags : Set[String]) = if(tags.isEmpty) {
+    queryAll
+  } else {
+    BSONDocument("tags" -> BSONDocument("$in" -> tags))
   }
 
   def queryForLanguage(language : Language) = BSONDocument("language" -> language.languageCode)
+
+  def queryForSlug(slug : String) = BSONDocument("slug" -> slug)
 
 }
 

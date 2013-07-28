@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #-*- coding: utf-8 -*-
 
-import os, sys
+import os, sys, datetime
 from pymongo import Connection
 
 basedir = sys.argv[1]
@@ -30,10 +30,13 @@ class Entry:
                 'content':self.content.encode('utf-8'),
                 'slug':self.slug,
                 'tags':self.tags,
-                'creationDate':self.ctime,
-                'updateDate':self.mtime,
+                'creationDate':toTime(self.ctime),
+                'updateDate':toTime(self.mtime),
                 'language':'tr_TR',
                 'format':'html'}
+
+def toTime(sec):
+    return datetime.datetime.fromtimestamp(sec)
 
 def slugify(s):
     return os.path.splitext(s)[0].replace('_', '-', )
