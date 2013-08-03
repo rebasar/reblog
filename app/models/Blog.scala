@@ -5,17 +5,37 @@ import org.joda.time.format.DateTimeFormat
 import play.api.mvc.QueryStringBindable
 import reactivemongo.bson._
 
+case class URLParameters(tags : Set[String], language : Option[Language])
+
+case class Tag(name : String, count : Int, selected : Boolean, href : String)
+
+object Tag {
+
+  def fromBSONDocument(doc : BSONDocument, params : URLParameters) : Tag = {
+    val selectedTags = params.tags
+    val name = doc.getAs[String]("_id").get
+    val count = doc.getAs[Int]("count").get
+    val afterClick : Set[String] = if(selectedTags contains name) { selectedTags - name } else { selectedTags + name }
+    val href = controllers.routes.Application.index(afterClick.toList, params.language).url
+    Tag(name, count, selectedTags.contains(name), href)
+  }
+
+}
+
 sealed abstract class Language {
   val shortCode: String
   val languageCode: String
   val name: String
 }
 
-case class LanguageSelection(code : String, name : String, selected : Boolean)
+case class LanguageSelection(code : String, name : String, selected : Boolean, href : String)
 
 object LanguageSelection {
-  def unselected(language : Language) = LanguageSelection(language.shortCode, language.name, false)
-  def selected(language : Language) = LanguageSelection(language.shortCode, language.name, true)
+  def unselected(language : Language, params : URLParameters) = LanguageSelection(language.shortCode, language.name, false, urlForSelectingLanguage(language, params).url)
+  def selected(language : Language, params : URLParameters) = LanguageSelection(language.shortCode, language.name, true, urlForSelectingLanguage(language, params).url)
+
+  def urlForSelectingLanguage(language : Language, params : URLParameters) = controllers.routes.Application.index(params.tags.toList, Some(language))
+
 }
 
 object Language {
@@ -29,13 +49,13 @@ object Language {
     case "tr" => Turkish
   }
 
-  def all = List(Turkish, English).map(LanguageSelection.unselected(_))
+  def all(params : URLParameters) = List(Turkish, English).map(LanguageSelection.unselected(_, params))
 
-  def select(lang : Language) = for (language <- List(Turkish, English))
+  def select(lang : Language, params : URLParameters) = for (language <- List(Turkish, English))
     yield if(language == lang){
-      LanguageSelection.selected(language)
+      LanguageSelection.selected(language, params)
     } else {
-      LanguageSelection.unselected(language)
+      LanguageSelection.unselected(language, params)
     }
 
   implicit def queryStringBinder(implicit stringBinder: QueryStringBindable[String]) = new QueryStringBindable[Language] {

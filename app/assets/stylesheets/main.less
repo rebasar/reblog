@@ -1,0 +1,37 @@
+@basecolor: lightgrey;
+@bodylink: rgb(63, 159, 255);
+@visitedlink: desaturate(@bodylink, 40);
+@tagbg: darken(spin(@bodylink, 70), 20);
+@tagtext: lighten(@basecolor, 20);
+
+body { font-family: sans-serif; background: black; color: @basecolor }
+#articles { float: left; width: 80%; margin: 2.5%; }
+
+.article { border: 2pt solid @basecolor; border-radius: 10pt; padding: 10pt; margin-bottom: 15pt; }
+.article .title { border-bottom: 2pt solid @basecolor; padding-bottom: 5pt; font-size: 18pt; font-weight: bold; color: lightsalmon }
+.article .title a { color: lightsalmon; text-decoration: none }
+.article .body a { color: @bodylink }
+.article .body a:visited { color: @visitedlink; }
+
+.footer { border-top: 2pt solid @basecolor; padding-top: 5pt }
+.footer .tags .tag { background: @tagbg; color: @tagtext; padding: 2pt; border-radius: 5pt; margin-right: 2pt }
+.footer .tags:before {content: "Etiketler / Tags:"; }
+
+#sidebar { float: right; width: 15%; margin-top: 1%; border: 2pt solid @basecolor; border-radius: 10pt; margin-right: 10pt; position: fixed; top: 5%; left: 83%}
+#sidebar .sidebarbox {border-bottom: 2pt solid @basecolor; padding-bottom: 5pt}
+#sidebar .sidebarlast {border-bottom: none}
+#sidebar .sidebarbox .title {text-align: center; font-weight: bold; margin-top: 10pt; padding: 2pt}
+
+#tags ul { list-style-type: none; padding: 0% }
+#tags li.selected { list-style-type: square; }
+#tags li { margin-bottom: 10pt }
+#tags li .tag { background: @tagbg; padding: 2pt; border-radius: 5pt; margin: 10pt }
+#tags li .tag a { color: @tagtext }
+li .count:before { content: "[" }
+li .count:after { content: "]"}
+li .count { float: right; margin-right: 10pt; }
+
+#language ul { list-style-type: none; padding: 0% }
+#language { text-align: center }
+li.language a { color: @basecolor; text-decoration: none }
+li.language a:hover { text-decoration: underline }

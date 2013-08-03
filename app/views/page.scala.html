@@ -1,4 +1,4 @@
-@(a: Article)(implicit tags : (Set[String] => List[Tag]), languageList : (Option[Language] => List[LanguageSelection]))
+@(a: Article)(implicit tags : (URLParameters => List[Tag]), languageList : (URLParameters => List[LanguageSelection]))
 
 @main("reblog :: " + a.title) {
 <div id="articles">
@@ -9,7 +9,7 @@
     <div class="title">Language / Dil</div>
     <div class="content">
       <ul>
-	@for(ls <- languageList(Some(a.language))){
+	@for(ls <- languageList(URLParameters(a.tags, Some(a.language)))){
 		   <li class="language @if(ls.selected){selected}">@ls.name</ls>
 		   }
       </ul>
@@ -18,7 +18,7 @@
   <div id="tags" class="sidebarbox sidebarlast">
     <div class="title">Tags / Etiketler</div>
     <div class="content">
-      @taglist(tags(a.tags))
+      @taglist(tags(URLParameters(a.tags, Some(a.language))))
     </div>
   </div>
 </div>
