@@ -5,6 +5,25 @@ import org.joda.time.format.DateTimeFormat
 import play.api.mvc.QueryStringBindable
 import reactivemongo.bson._
 
+object QueryBuilder {
+
+  def fromParameters(params : URLParameters) = {
+    val base = BSONDocument()
+    val tagFiltered = if (params.tags.isEmpty) {
+      base
+    } else {
+      base.add(BSONDocument("tags" -> BSONDocument("$in" -> params.tags)))
+    }
+    params.language match {
+      case None => tagFiltered
+      case Some(lang) => tagFiltered.add(BSONDocument("language" -> lang.languageCode))
+    }
+  }
+
+  def fromSlug(slug : String) = BSONDocument("slug" -> slug)
+
+}
+
 case class URLParameters(tags : Set[String], language : Option[Language])
 
 case class Tag(name : String, count : Int, selected : Boolean, href : String)
@@ -126,22 +145,6 @@ case class Article(
 
   def formattedCreationDate = creationDate.map(formatReadableDate(_))
   def formattedUpdateDate = updateDate.map(formatReadableDate(_))
-
-}
-
-object Article {
-
-  def queryAll = BSONDocument()
-
-  def queryForTags(tags : Set[String]) = if(tags.isEmpty) {
-    queryAll
-  } else {
-    BSONDocument("tags" -> BSONDocument("$in" -> tags))
-  }
-
-  def queryForLanguage(language : Language) = BSONDocument("language" -> language.languageCode)
-
-  def queryForSlug(slug : String) = BSONDocument("slug" -> slug)
 
 }
 

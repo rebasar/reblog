@@ -33,11 +33,11 @@ object Application extends Controller with MongoController {
   def index(tag : List[String], language: Option[Language]) = Action {
     Async {
       val tagSet = tag.toSet
+      val params = URLParameters(tagSet, language)
       val query = BSONDocument(
         "$orderby" -> BSONDocument("updateDate" -> -1),
-        "$query" -> Article.queryForTags(tagSet))
+        "$query" -> QueryBuilder.fromParameters(params))
       val cursor : Cursor[Article] = collection.find(query).cursor[Article]
-      val params = URLParameters(tagSet, language)
       cursor.toList.map { result =>
         Ok(views.html.index(result, params))
       }
@@ -48,7 +48,7 @@ object Application extends Controller with MongoController {
     Async {
       val query = BSONDocument(
         "$orderby" -> BSONDocument("updateDate" -> -1),
-        "$query" -> Article.queryForSlug(slug))
+        "$query" -> QueryBuilder.fromSlug(slug))
       val cursor = collection.find(query).one[Article]
       cursor.map { result =>
         result.map {article => Ok(views.html.page(article))}.getOrElse(NotFound)
