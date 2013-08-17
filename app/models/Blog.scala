@@ -4,6 +4,11 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.mvc.QueryStringBindable
 import reactivemongo.bson._
+import laika.api.Transform
+import laika.io.Input.fromString
+import laika.parse.markdown.Markdown
+import laika.parse.rst.ReStructuredText
+import laika.render.HTML
 
 object QueryBuilder {
 
@@ -24,7 +29,43 @@ object QueryBuilder {
 
 }
 
-case class URLParameters(tags : Set[String], language : Option[Language])
+case class Pagination(previous : Option[Int], current : Int, next : Option[Int], total : Int)
+
+object Pagination {
+
+  def apply(current : Int, total : Int) = {
+    val pagecount = total/10
+    val previous = if(current == 0) { None } else { Some(current - 1)}
+    val next = if(current == pagecount){ None } else { Some(current + 1) }
+    new Pagination(previous, current, next, pagecount)
+  }
+
+  def appy(previous : Option[Int], current : Int, next : Option[Int], total : Int) = new Pagination(previous, current, next, total)
+
+}
+
+object ContentFormatter {
+
+  def toHTML(format : ArticleFormat, content : String) : String = {
+    val transform = buildTransform(format)
+    transform(content)
+  }
+
+  def buildTransform(format : ArticleFormat) = format match {
+    case HTMLFormat => identity[String]_
+    case RSTFormat => { content : String => Transform from ReStructuredText to HTML fromString content toString }
+    case MarkdownFormat => { content : String => Transform from Markdown to HTML fromString content toString }
+  }
+
+}
+
+case class URLParameters(tags : Set[String], language : Option[Language], page : Int) {
+
+  def toPage(page : Int) = URLParameters(tags, language, page)
+
+  def url = controllers.routes.Application.index(tags.toList, language, page)
+
+}
 
 case class Tag(name : String, count : Int, selected : Boolean, href : String)
 
@@ -106,24 +147,39 @@ case object Turkish extends Language{
   val name: String = "Türkçe"
 }
 
-sealed abstract class ArticleFormat
+sealed abstract class ArticleFormat {
 
-object ArticleFormat {
-  def fromName(name : String) = name match {
-    case "html" => HTMLFormat
-    case "rst" => RSTFormat
-  }
-
-  def toName(format : ArticleFormat) = format match {
-    case HTMLFormat => "html"
-    case RSTFormat => "rst"
-  }
+  def getName : String
 
 }
 
-case object HTMLFormat extends ArticleFormat
+object ArticleFormat {
 
-case object RSTFormat extends ArticleFormat
+  def getAllFormats = List(HTMLFormat, RSTFormat, MarkdownFormat)
+
+  def fromName(name : String) = getAllFormats.filter(_.getName == name).head
+
+  def toName(format : ArticleFormat) = format.getName
+
+}
+
+case object HTMLFormat extends ArticleFormat {
+
+  override def getName = "html"
+
+}
+
+case object RSTFormat extends ArticleFormat {
+
+  override def getName = "rst"
+
+}
+
+case object MarkdownFormat extends ArticleFormat {
+
+  override def getName = "md"
+
+}
 
 case class Article(
   title: String,
@@ -146,6 +202,8 @@ case class Article(
   def formattedCreationDate = creationDate.map(formatReadableDate(_))
   def formattedUpdateDate = updateDate.map(formatReadableDate(_))
 
+  def toHTML = ContentFormatter.toHTML(format, content)
+
 }
 
 object JsonFormats {
@@ -162,10 +220,7 @@ object JsonFormats {
 
   implicit val languageWrites : Writes[Language] = Writes[Language] { language => JsString(language.languageCode) }
 
-  implicit val articleFormatWrites : Writes[ArticleFormat] = Writes[ArticleFormat] { format => JsString(format match {
-    case HTMLFormat => "html"
-    case RSTFormat => "rst"
-  })}
+  implicit val articleFormatWrites : Writes[ArticleFormat] = Writes[ArticleFormat] { format => JsString(format.getName)}
 
   implicit val languageFormat = Format(languageReads, languageWrites)
   implicit val aritcleFormatFormat = Format(articleFormatReads, articleFormatWrites)

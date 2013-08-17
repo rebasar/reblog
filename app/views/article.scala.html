@@ -1,7 +1,7 @@
 @(article: Article)
 <div class="article" id="@article.slug">
   <div class="title"><a href="@article.url">@article.title</a></div>
-  <div class="body">@Html(article.content)</div>
+  <div class="body">@Html(article.toHTML)</div>
   <div class="footer">
     <span class="tags">
       @for(tag <- article.tags){

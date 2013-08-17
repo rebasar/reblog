@@ -1,0 +1,10 @@
+@(params : URLParameters, pagination : Pagination)
+
+@next(page : Int) = { <span id="nextpage"><a href="@params.toPage(page).url">&gt;&gt;</a></span> }
+@previous(page : Int) = { <span id="previouspage"><a href="@params.toPage(page).url">&lt;&lt;</a></span> }
+
+<div id="navbar">
+  @pagination.previous.map(previous)
+  <span id="curentpage">@pagination.current / @pagination.total</span>
+  @pagination.next.map(next)
+</div>

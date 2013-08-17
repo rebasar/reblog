@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index(tag:List[String], lang:Option[models.Language])
+GET     /                           controllers.Application.index(tag:List[String], lang:Option[models.Language], page:Int ?= 0)
 GET     /show/:page                 controllers.Application.page(page : String)
 
 # Map static resources from the /public folder to the /assets URL path

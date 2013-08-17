@@ -9,7 +9,7 @@
     <div class="title">Language / Dil</div>
     <div class="content">
       <ul>
-	@for(ls <- languageList(URLParameters(a.tags, Some(a.language)))){
+	@for(ls <- languageList(URLParameters(a.tags, Some(a.language), 0))){
 		   <li class="language @if(ls.selected){selected}">@ls.name</ls>
 		   }
       </ul>
@@ -18,7 +18,7 @@
   <div id="tags" class="sidebarbox sidebarlast">
     <div class="title">Tags / Etiketler</div>
     <div class="content">
-      @taglist(tags(URLParameters(a.tags, Some(a.language))))
+      @taglist(tags(URLParameters(a.tags, Some(a.language), 0)))
     </div>
   </div>
 </div>
