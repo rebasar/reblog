@@ -6,10 +6,12 @@
 	    @article(a)
 	    }
 	    </div>
-<div id="navigation">
-  @navbar(params, pagination)
-</div>
 <div id="sidebar">
+  <div id="navigation" class="sidebarbox">
+    <div class="content">
+      @navbar(params, pagination)
+    </div>
+  </div>
   <div id="language" class="sidebarbox">
     <div class="title">@Messages("sidebar.language")</div>
     <div class="content">

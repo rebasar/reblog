@@ -2,35 +2,107 @@
 @bodylink: rgb(63, 159, 255);
 @visitedlink: desaturate(@bodylink, 40);
 @tagbg: darken(spin(@bodylink, 70), 20);
+@tagselectedbg: spin(@tagbg, 70);
 @tagtext: lighten(@basecolor, 20);
+@titlecolor: lightsalmon;
 
-body { font-family: sans-serif; background: black; color: @basecolor }
-#articles { float: left; width: 80%; margin: 2.5%; }
+body { font-family: sans-serif;
+       background: black;
+       color: @basecolor;
+     }
 
-.article { border: 2pt solid @basecolor; border-radius: 10pt; padding: 10pt; margin-bottom: 15pt; }
-.article .title { border-bottom: 2pt solid @basecolor; padding-bottom: 5pt; font-size: 18pt; font-weight: bold; color: lightsalmon }
-.article .title a { color: lightsalmon; text-decoration: none }
-.article .body a { color: @bodylink }
-.article .body a:visited { color: @visitedlink; }
+#articles { float: left;
+	    width: 80%;
+	    margin: 2.5%;
+	  }
 
-.footer { border-top: 2pt solid @basecolor; padding-top: 5pt }
-.footer .tags .tag { background: @tagbg; color: @tagtext; padding: 2pt; border-radius: 5pt; margin-right: 2pt }
+.article { border: 2pt solid @basecolor;
+	   border-radius: 10pt;
+	   padding: 10pt;
+	   margin-bottom: 15pt;
+	 }
 
-#sidebar { float: right; width: 15%; margin-top: 1%; border: 2pt solid @basecolor; border-radius: 10pt; margin-right: 10pt; position: fixed; top: 5%; left: 83%}
-#sidebar .sidebarbox {border-bottom: 2pt solid @basecolor; padding-bottom: 5pt}
-#sidebar .sidebarlast {border-bottom: none}
-#sidebar .sidebarbox .title {text-align: center; font-weight: bold; margin-top: 10pt; padding: 2pt}
+.article .title { border-bottom: 2pt solid @basecolor;
+		  padding-bottom: 5pt;
+		  font-size: 18pt;
+		  font-weight: bold;
+		  color: @titlecolor;
+		  a { color: @titlecolor;
+		      text-decoration: none
+		    }
+		}
+.article .body a { color: @bodylink;
+		   :visited { color: @visitedlink; }
+		 }
+
+.footer { border-top: 2pt solid @basecolor;
+	  padding-top: 5pt }
+.footer .tags .tag { background: @tagbg;
+		     color: @tagtext;
+		     padding: 2pt;
+		     border-radius: 5pt;
+		     margin-right: 2pt
+		   }
+
+#sidebar { float: right;
+	   width: 15%;
+	   margin-top: 1%;
+	   border: 2pt solid @basecolor;
+	   border-radius: 10pt;
+	   margin-right: 10pt;
+	   position: absolute;
+	   top: 5%;
+	   left: 83%;
+	 }
+
+#sidebar .sidebarbox { border-bottom: 2pt solid @basecolor;
+		       padding-bottom: 5pt;
+		       .title { text-align: center;
+				font-weight: bold;
+				margin-top: 10pt;
+				padding: 2pt
+			      }
+		     }
+
+#sidebar .sidebarlast { border-bottom: none }
 
 #tags ul { list-style-type: none; padding: 0% }
-#tags li.selected { list-style-type: square; }
-#tags li { margin-bottom: 10pt }
-#tags li .tag { background: @tagbg; padding: 2pt; border-radius: 5pt; margin: 10pt }
-#tags li .tag a { color: @tagtext }
-li .count:before { content: "[" }
-li .count:after { content: "]"}
-li .count { float: right; margin-right: 10pt; }
+#tags li { margin-bottom: 5pt; }
+#tags li .tag { background: @tagbg;
+		padding: 2pt;
+		border-radius: 5pt;
+		margin: 10pt;
+		:after { content: "⊕"; font-size: 14pt; padding-left: 2pt }
+		a { color: @tagtext;
+		    text-decoration: none;
+		    padding-left: 3pt;
+		    padding-right: 3pt
+		  }
+	      }
 
-#language ul { list-style-type: none; padding: 0% }
-#language { text-align: center }
+#tags li .selected { background: @tagselectedbg;
+		     :after { content: "⊖"; font-size: 14pt}
+		   }
+
+#tags li .count { float: right;
+		  margin-right: 10pt;
+		}
+#tags li .count:before { content: "["; }
+#tags li .count:after { content: "]"; }
+
+#language { text-align: center;
+	    ul { list-style-type: none;
+		 padding: 0%
+	       }
+	  }
+
 li.language a { color: @basecolor; text-decoration: none }
 li.language a:hover { text-decoration: underline }
+
+.navicon { font-size: 16pt; font-weight: bold;
+	   a { text-decoration: none; color: @bodylink;
+	       :visited { color: @visitedlink }
+	     }
+	 }
+
+#navbar { text-align: center; }
