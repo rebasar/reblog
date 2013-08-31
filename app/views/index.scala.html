@@ -22,10 +22,18 @@
       </ul>
     </div>
   </div>
-  <div id="tags" class="sidebarbox sidebarlast">
+  <div id="tags" class="sidebarbox">
     <div class="title">@Messages("sidebar.tags")</div>
     <div class="content">
       @taglist(tags(params))
+    </div>
+  </div>
+  <div id="feeds" class="sidebarbox sidebarlast">
+    <div class="title"></div>
+    <div class="content">
+      <a href="@routes.Feed.feed(Atom, params.tags.toList, params.language, 0)">
+	<img src="@routes.Assets.at("images/feed-icon-28x28.png")"/>
+      </a>
     </div>
   </div>
 </div>
