@@ -31,7 +31,7 @@ object Application extends Controller with MongoController {
     case Some(lang) => Language.select(lang, params)
   }
 
-  def index(tag : List[String], language: Option[Language], page: Int) = Action {
+  def index(tag : List[String], language: Option[Language], page: Int) = Action {implicit request: Request[_] =>
     Async {
       val tagSet = tag.toSet
       val params = URLParameters(tagSet, language, page)
