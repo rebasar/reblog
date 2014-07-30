@@ -9,6 +9,7 @@
 body { font-family: sans-serif;
        background: black;
        color: @basecolor;
+       margin: 0px;
      }
 
 #articles { float: left;
@@ -108,3 +109,22 @@ li.language a:hover { text-decoration: underline }
 #navbar { text-align: center; }
 
 #feeds .content { text-align: center; }
+
+@media screen and (max-width: 980px) {
+    #sidebar { width: 0%;
+	       visibility: hidden;
+	       margin: 0% }
+    #articles { width: 100%;
+		margin: 0% }
+
+    #sidebar:target {
+	width: 100%;
+	visibility: visible;
+	left: 0%;
+	top: 0%;
+    }
+    #sidebar:target + #articles { width: 0%;
+				  margin: 0%;
+				  visibility: hidden;
+    }
+}
