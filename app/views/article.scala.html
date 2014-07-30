@@ -1,8 +1,8 @@
 @(article: Article)
-<div class="article" id="@article.slug">
-  <div class="title"><a href="@article.url">@article.title</a></div>
+<article class="article" id="@article.slug">
+  <header class="title"><a href="@article.url">@article.title</a></header>
   <div class="body">@Html(article.toHTML)</div>
-  <div class="footer">
+  <footer class="footer">
     @Messages("article.tags")
     <span class="tags">
       @for(tag <- article.tags){
@@ -10,5 +10,5 @@
 		  }
     </span>
     <span class="updated">@article.formattedUpdateDate</span>
-  </div>
-</div>
+  </footer>
+</article>

@@ -1,4 +1,4 @@
-@(a: Article)(implicit tags : (URLParameters => List[Tag]), languageList : (URLParameters => List[LanguageSelection]))
+@(a: Article)(implicit tags : List[Tag], languageList : (URLParameters => List[LanguageSelection]))
 
 @main("reblog :: " + a.title) {
 <div id="articles">
@@ -18,7 +18,7 @@
   <div id="tags" class="sidebarbox sidebarlast">
     <div class="title">Tags / Etiketler</div>
     <div class="content">
-      @taglist(tags(URLParameters(a.tags, Some(a.language), 0)))
+      @taglist(tags)
     </div>
   </div>
 </div>

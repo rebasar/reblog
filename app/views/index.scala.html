@@ -1,11 +1,6 @@
-@(articles: List[Article], params : URLParameters, pagination : Pagination)(implicit tags : (URLParameters => List[Tag]), languageList : (URLParameters => List[LanguageSelection]), lang: Lang)
+@(articles: List[Article], params : URLParameters, pagination : Pagination)(implicit tags : List[Tag], languageList : (URLParameters => List[LanguageSelection]), lang: Lang)
 
 @main(Messages("site.title")) {
-<div id="articles">
-  @for(a <- articles){
-	    @article(a)
-	    }
-	    </div>
 <div id="sidebar">
   <div id="navigation" class="sidebarbox">
     <div class="content">
@@ -25,7 +20,7 @@
   <div id="tags" class="sidebarbox">
     <div class="title">@Messages("sidebar.tags")</div>
     <div class="content">
-      @taglist(tags(params))
+      @taglist(tags)
     </div>
   </div>
   <div id="feeds" class="sidebarbox sidebarlast">
@@ -37,4 +32,10 @@
     </div>
   </div>
 </div>
+<div id="articles">
+  @for(a <- articles){
+	    @article(a)
+	    }
+	    </div>
+
 }
