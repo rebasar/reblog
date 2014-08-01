@@ -14,6 +14,7 @@ import models.JsonFormats._
 import models.BSONFormats._
 import scala.util._
 import scala.concurrent.future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object Application extends Controller with MongoController {
 
@@ -31,35 +32,31 @@ object Application extends Controller with MongoController {
     case Some(lang) => Language.select(lang, params)
   }
 
-  def index(tag : List[String], language: Option[Language], page: Int) = Action {implicit request: Request[_] =>
-    Async {
-      val tagSet = tag.toSet
-      val params = URLParameters(tagSet, language, page)
-      val query = BSONDocument(
-        "$orderby" -> BSONDocument("updateDate" -> -1),
-        "$query" -> QueryBuilder.fromParameters(params))
-      val countCommand = Count("entries", Some(QueryBuilder.fromParameters(params)))
-      val countResult = db.command(countCommand)
-      val cursor : Cursor[Article] = collection.find(query).options(QueryOpts(page*10, 0, 0)).cursor[Article]
-      countResult.flatMap{ total => 
-        tags(params).flatMap { implicit tags =>
-          cursor.collect[List](10).map { result =>
-            val pagination = Pagination(page, total)
-            Ok(views.html.index(result, params, pagination))
-          }
+  def index(tag : List[String], language: Option[Language], page: Int) = Action.async {implicit request: Request[_] =>
+    val tagSet = tag.toSet
+    val params = URLParameters(tagSet, language, page)
+    val query = BSONDocument(
+      "$orderby" -> BSONDocument("updateDate" -> -1),
+      "$query" -> QueryBuilder.fromParameters(params))
+    val countCommand = Count("entries", Some(QueryBuilder.fromParameters(params)))
+    val countResult = db.command(countCommand)
+    val cursor : Cursor[Article] = collection.find(query).options(QueryOpts(page*10, 0, 0)).cursor[Article]
+    countResult.flatMap{ total =>
+      tags(params).flatMap { implicit tags =>
+        cursor.collect[List](10).map { result =>
+          val pagination = Pagination(page, total)
+          Ok(views.html.index(result, params, pagination))
         }
       }
     }
   }
 
-  def page(slug : String) = Action {
-    Async {
-      val query = BSONDocument(
-        "$orderby" -> BSONDocument("updateDate" -> -1),
-        "$query" -> QueryBuilder.fromSlug(slug))
-      val cursor = collection.find(query).one[Article]
-      cursor.flatMap(getArticleWithTags(_))
-    }
+  def page(slug : String) = Action.async {
+    val query = BSONDocument(
+      "$orderby" -> BSONDocument("updateDate" -> -1),
+      "$query" -> QueryBuilder.fromSlug(slug))
+    val cursor = collection.find(query).one[Article]
+    cursor.flatMap(getArticleWithTags(_))
   }
 
   private def getArticleWithTags(result : Option[Article]) = {
